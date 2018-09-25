@@ -6,6 +6,3 @@ Friday lab is 9:00am-11:00am
 Delete everything in this file except one of these lines:
 
 Monday
-Monday, can't make Friday
-Friday
-Friday, can't make Monday
