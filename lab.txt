@@ -1,0 +1,11 @@
+Hi! Replace EVERYTHING in this file with one of the following choices depending
+on your preference and availability for lab section. 
+Monday lab is 1:00pm-3:00pm
+Friday lab is 9:00am-11:00am
+
+Delete everything in this file except one of these lines:
+
+Monday
+Monday, can't make Friday
+Friday
+Friday, can't make Monday
