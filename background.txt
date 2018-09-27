@@ -7,7 +7,7 @@ Binary result
 1111 1111 0000 0000 0000 0000 0000 0000
 
 which is:
-ff0000
+ff0000 (in hexadecimal)
 
 2. How many milliamperes of current will flow through a 1.5K resistor connected to 3V on one end and 0V (Ground) on the other end?
 
