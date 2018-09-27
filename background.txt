@@ -1,0 +1,29 @@
+1. What is the result of performing a bitwise OR of the following two hexadecimal numbers (include the result in decimal): 0x0f OR 0xff. Now left shift that number by 24; what is the result in hexadecimal?
+
+Bitwise OR: Result = 11111111
+
+After leftshift by 24:
+Binary result
+1111 1111 0000 0000 0000 0000 0000 0000
+
+which is:
+ff0000 (in hexadecimal)
+
+2. How many milliamperes of current will flow through a 1.5K resistor connected to 3V on one end and 0V (Ground) on the other end?
+
+Answer: 2mA
+
+3. Find a file in the directory /etc on your computer; send us the name of the file and the number of bytes contained in that file. How many files and directories are contained in /etc? Include the commands you used to answer these questions.
+
+cd .. (to go out of cs107e_home)
+ls (to scroll through)
+cd /etc (to go into /etc)
+ls | wc -l (find number of files = 91)
+echo */ | wc (find number of directories = 21)
+wc -c < syslog.conf (96 bytes)
+
+Number of files = 91
+Number of directories = 21
+Name of file: syslog.conf
+Number of bytes: 96 
+
