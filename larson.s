@@ -27,7 +27,8 @@ loop:
 	add r0, r4, #LEDBASE
 	mov r3, #1
 	lsl r3, r0
-	// set GPIO pin high
+
+setHigh:
 	ldr r0, SET0
 	str r3, [r0] 
 
