@@ -2,3 +2,7 @@
 
 *.o
 *.bin
+*.elf
+*.list
+*.a
+*.exe
