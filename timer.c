@@ -4,7 +4,7 @@ void timer_init(void) {
 }
 
 unsigned int timer_get_ticks(void) {
-    return 0;  // TODO: Your code goes here.
+    return 1;  // TODO: Your code goes here.
 }
 
 void timer_delay_us(unsigned int usecs) {
