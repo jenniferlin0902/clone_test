@@ -3,12 +3,11 @@
  * Kyle D'Souza
  * I use 8 LEDs for this extension (specifically GPIO pins 20-27)
  * Citation: Talked about assignment with Juliana Lu, Jonathan (not sure
- * last name, Siddhesh Dhanawade, and Elisa Lupin, all in office hours.
- *
+ * last name), Siddhesh Dhanawade, and Elisa Lupin, all in office hours.
  *
  */
 
-.equ DELAY, 0x3F0000 	// Delay Constant
+.equ DELAY, 0x100000 	// Delay Constant Advised For Submission
 
 // configure GPIO 20-27 for output
 ldr r0, FSEL2
