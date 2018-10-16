@@ -50,7 +50,7 @@ void test_timer() {
 // and are ready to test them
 
 void main(void) {
-    // test_gpio_set_get_function();
-    // test_gpio_read_write();
-    // test_timer();
+    test_gpio_set_get_function();
+    test_gpio_read_write();
+    test_timer();
 }
