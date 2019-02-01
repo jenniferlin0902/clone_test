@@ -1,80 +1,97 @@
+/* File: gpio.c
+ * ------------
+ *
+ * Pat Hanrahn, Phil Levis, original authors
+ * Julie Zelenski edited Wed Jan 24 11:41:57 PST 2018
+ *
+ * The basic gpio module supports set/get pin function and pin read/write.
+ * See gpioextra for event detection and pull-up/pull-down.
+ */
+
+
+/*
+   GPIO (general purpose input/output) pins can be configured in many
+   ways, so there are a lot of configuration data registers for them.
+
+   The BCM2835 supports 54 GPIO pins. Each pin can be configured to be
+   in one of up to 8 states: input, output, then one of 6 alternate functions
+   which is pin-specific. Consult the BCM2835 ARM peripheral manual,
+   section 6.2 (pages 102-103) for details on these 6 functions. Some
+   pins support 6, some support 3, some actually support none (pins
+   46-54).
+*/
+
 #include "gpio.h"
+#include "_gpio_private.h"
+// Reminder of declaration from private: volatile struct gpio * const _gpio;
 
-// address 
-#define GPIO_SET0 0x2020001C
-#define GPIO_SET1 0x20200020
-#define GPIO_CLR0 0x20200028
-#define GPIO_CLR1 0x2020002C
-#define GPIO_LVL0 0x20200034
-#define GPIO_FSEL_BASE 0x20200000
-#define GPIO_FSEL0 GPIO_FSEL_BASE
-#define GPIO_FSEL_PIN_SIZE 0x3 
+/*
+ * all libpi peripherals libraries require an init
+ * even if it doesn't do anything
+ */
+void gpio_init(void) {}
 
+void gpio_set_function(unsigned int pin, unsigned int func)
+{
+    if (pin < GPIO_PIN_FIRST || pin > GPIO_PIN_LAST) {
+        return;
+    }
+    if (func < 0 || func > 7) {
+        return;
+    }
 
-void gpio_init(void) {
+    unsigned int bank = pin / 10;
+    unsigned int shift = (pin % 10) * 3;
+
+    _gpio->fsel[bank] = (_gpio->fsel[bank] & ~(7 << shift)) | ((func & 7) << shift);
 }
 
+unsigned int gpio_get_function(unsigned int pin)
+{
+    if (pin < GPIO_PIN_FIRST || pin > GPIO_PIN_LAST) {
+        return GPIO_INVALID_REQUEST;
+    }
 
-void gpio_set_function(unsigned int pin, unsigned int function) {
-   // first find the GPIO pin FSEL address 
-	volatile unsigned int* regAddr;
-	unsigned int offset = (pin % 10) * GPIO_FSEL_PIN_SIZE;
-	unsigned int group = pin / 10;
-	regAddr = (unsigned int*)(GPIO_FSEL_BASE);
-	regAddr += group;
+    unsigned int bank = pin / 10;
+    unsigned int shift = (pin % 10) * 3;
 
-	// first read the regAddr 
-	unsigned int oldVal = *regAddr; 
-	unsigned int newVal = (oldVal & (~(0b111 << offset))) | (function << offset); 
-	// write to regAddr 
-	*regAddr = newVal;
+    return (_gpio->fsel[bank] >> shift) & 7;
 }
 
-unsigned int gpio_get_function(unsigned int pin) {
-      // first find the GPIO pin FSEL address 
-	volatile unsigned int* regAddr;
-	unsigned int offset = (pin % 10) * GPIO_FSEL_PIN_SIZE;
-	unsigned int group = pin / 10;
-	regAddr = (unsigned int*)(GPIO_FSEL_BASE);
-	regAddr += group;
-	// first read the regAddr 
-	unsigned int function = (*regAddr & (0b111 << offset)) >> offset;
-	return function;
-}
-
-void gpio_set_input(unsigned int pin) {
+void gpio_set_input(unsigned int pin)
+{
     gpio_set_function(pin, GPIO_FUNC_INPUT);
 }
 
-void gpio_set_output(unsigned int pin) {
+void gpio_set_output(unsigned int pin)
+{
     gpio_set_function(pin, GPIO_FUNC_OUTPUT);
 }
 
-void gpio_write(unsigned int pin, unsigned int value) {
-	// assume value is 1 or 0
-	// first find GPIO SET address 
-	volatile unsigned int* regAddr = 0;
-	unsigned int offset = pin % 32;
-	unsigned int group = pin / 32;
-	if (value == 1){
-		regAddr = (unsigned int*)(GPIO_SET0);
-	} else if (value == 0) {
-		regAddr = (unsigned int*)(GPIO_CLR0);
-	}
-	regAddr += group;
+void gpio_write(unsigned int pin, unsigned int val)
+{
+    if (pin < GPIO_PIN_FIRST || pin > GPIO_PIN_LAST) {
+        return;
+    }
 
-	//unsigned int oldVal = *regAddr;
-	//unsigned int newVal = (oldVal & ~(0x1<<offset)) | (0b1<<offset);
-	*regAddr = (0b1<<offset);
+    unsigned int bank = pin / 32;
+    unsigned int shift = pin % 32;
+
+    if (val) {
+        _gpio->set[bank] = 1 << shift;
+    } else {
+        _gpio->clr[bank] = 1 << shift;
+    }
 }
 
-unsigned int gpio_read(unsigned int pin) {
-	volatile unsigned int* regAddr;
-	unsigned int offset = pin % 32;
-	unsigned int group = pin / 32;
-	regAddr = (unsigned int*)(GPIO_LVL0);
-	regAddr += group;
+unsigned int gpio_read(unsigned int pin)
+{
+    if (pin < GPIO_PIN_FIRST || pin > GPIO_PIN_LAST) {
+        return GPIO_INVALID_REQUEST;
+    }
 
-	unsigned int val = ((*regAddr) >> offset) & 0b1;
-	return val;
+    unsigned int bank = pin / 32;
+    unsigned int shift = pin % 32;
+
+    return (_gpio->lev[bank] & (1 << shift)) != 0;
 }
